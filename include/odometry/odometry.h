@@ -15,18 +15,28 @@ class odometer  //header of the class
 
     /* ROS topics */
     ros::Subscriber input_subscriber;
-    ros::Publisher output_publisher, clock_publisher;
+    ros::Publisher output_publisher;
+    
+    /* Ros service*/
+    ros::ServiceServer server;
+    
     
     /* Parameters from ROS parameter server */
     
 
     /* ROS topic callbacks */
-    void input_MessageCallback(const std_msgs::Odometry::ConstPtr& msg);
-
-    /* Estimator periodic task */
-    void PeriodicTask(void);
+    void input_MessageCallback(const nav_msgs::Odometry::ConstPtr& msg);
+    
+    /* ROS service callbacks */
+    void reset_callback(const nav_msgs::Odometry::ConstPtr& msg);
+     
+    /*auxiliary functions*/
+    void integrate(void);
+    void publish(void);
     
     /* Node state variables */
+    float x, y, theta;
+    float vel, omega;
   
     
 

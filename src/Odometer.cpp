@@ -1,4 +1,4 @@
-#include "odometer.h"
+#include "odometry/odometry.h"
 
 
 #include <nav_msgs/Odometry.h>
@@ -23,57 +23,72 @@ void odometer::Prepare(void)
 
     
     /* ROS topics */
-    input_subscriber = Handle.subscribe("/robot_input", 1, &uni_kyn_simulator::input_MessageCallback, this);
-    output_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_state", 1);
-    clock_publisher  = Handle.advertise<rosgraph_msgs::Clock>("/clock", 1);
+    this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &odometer::input_MessageCallback, this);
+    this->output_publisher = this->Handle.advertise<nav_msgs::Odometry>("/odom", 1);
+    this->server = this->Handle.advertiseService<project1::Reset::Request, project1::Reset::Response>("reset odometry",&odometer::reset_callback, this);
+
     /* Initialize node state */
+    this->vel = 0;
+    this->omega = 0;
+    
+    this->x = 0;
+    this->y = 0;
+    this->theta = 0;
 
     
 
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 }
 
-void kyn_simulator::RunPeriodically(void)
+void odometer::RunPeriodically(void)
 {
     ROS_INFO("Node %s running.", ros::this_node::getName().c_str());
 
     // Wait other nodes start
     sleep(1.0);
+    
+    ros::Rate loop_rate(10);
+
 
     while (ros::ok())
     {
-        PeriodicTask();
 
         ros::spinOnce();
+        loop_rate.sleep();
 
-        usleep(1000);
     }
 }
 
-void kyn_simulator::Shutdown(void)
+void odometer::Shutdown(void)
 {
 
     ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
 }
 
-void kyn_simulator::input_MessageCallback(const sensor_msgs::Float64::ConstPtr& msg)
+void odometer::input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& msg)
 {
     /* Read message and store information */
-    simulator->setInputValues(msg->data.at(1), msg->data(2));
-}
-
-void kyn_simulator::PeriodicTask(void)
-{
+    this->vel = msg->data.at(1);
+    this->omega = msg->data(2);
     
-
-
-    /* Publish vehicle velocities */
-    geometry_msgs::TwistStamped VehicleVelocityMsg;
-    outputMsg.data.clear();
-    outputMsg.data.push_back(v);
-    outputMsg.data.push_back(omega);
-    output_publisher.publish(VehicleStateMsg);
-
+    integrate();
     
 }
 
+void odometer::reset_callback(const nav_msgs::Odometry::ConstPtr& msg){
+    this->x = msg->data(1);
+    this->y = msg.data(2);
+    this->theta = msg.data(3);
+    
+    odometer::publish();
+}
+
+void odometer::integrate(void){
+    
+}
+
+void odometer::publish(void){
+    
+}
+
+ 
