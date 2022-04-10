@@ -1,16 +1,15 @@
-#include "kynematics/kinematics.h"
+#include "odometer.h"
 
 
-#include <geometry_msgs/TwistStamped.h>
+#include <nav_msgs/Odometry.h>
 
-void kyn_simulator::Prepare(void)
+void odometer::Prepare(void)
 {
     /* Retrieve parameters from ROS parameter server */
-    std::string FullParamName;
+    std::string FullParamName, PartialName = "omnirobot";
 
-    
     // Model initial state
-    FullParamName = ros::this_node::getName()+"/l";
+    FullParamName = PartialName+"/l";
     if (false == Handle.getParam(FullParamName, l))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
