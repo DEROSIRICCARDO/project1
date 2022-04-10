@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 
-#include <std_msgs/Float64.h>
+#include <nav_msgs/Odometry.h>
 
 #define NAME_OF_THIS_NODE "odometer"
 
@@ -21,7 +21,7 @@ class odometer  //header of the class
     
 
     /* ROS topic callbacks */
-    void input_MessageCallback(const std_msgs::Float64::ConstPtr& msg);
+    void input_MessageCallback(const std_msgs::Odometry::ConstPtr& msg);
 
     /* Estimator periodic task */
     void PeriodicTask(void);
