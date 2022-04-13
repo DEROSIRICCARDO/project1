@@ -1,6 +1,6 @@
 #include "odometry/odometry.h"
 #include "nav_msgs/Odometry.h"
-#include <project1/Reset.h>
+#include <project1/Reset_Odometry.h>
 #include <dynamic_reconfigure/server.h>
 #include <project1/integration_methodsConfig.h>
 
@@ -22,7 +22,7 @@ void odometer::Prepare(void)
     this->output_publisher = this->Handle.advertise<nav_msgs::Odometry>("/odom", 1);
     
     /*Ros services*/
-    this->server = this->Handle.advertiseService<project1::Reset::Request, project1::Reset::Response>("reset odometry",&odometer::reset_callback, this);
+    this->server = this->Handle.advertiseService<project1::Reset_Odometry::Request, project1::Reset_Odometry::Response>("reset odometry",&odometer::reset_callback, this);
     
     /*dynamic reconfigure*/
     dynamic_reconfigure::Server<project1::integration_methodsConfig> dynServer;
@@ -31,13 +31,13 @@ void odometer::Prepare(void)
     
 
     /* Initialize node state */
-    this->vel = 0;
-    this->omega = 0;
+    this->vel = 0.0;
+    this->omega = 0.0;
     
-    this->x = 0;
-    this->y = 0;
-    this->theta = 0;
-    this->integration_method = 0;
+    this->x = 0.0;
+    this->y = 0.0;
+    this->theta = 0.0;
+    this->integration_method = 0.0;
 
     
 
@@ -69,21 +69,30 @@ void odometer::Shutdown(void)
     ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
 }
 
-void odometer::input_MessageCallback(const nav_msgs::Odometry::ConstPtr& msg)
+void odometer::input_MessageCallback(const geometry_msgs::TwistedStamped::ConstPtr& msg)
 {
     /* Read message and store information */
-    this->vel = msg->data.at(1);
-    this->omega = msg->data(2);
+    this->vel_x = msg.linear.x;
+    this->vel_y = msg.linear.y;
+    this->omega = msg.angular.z;
     
     integrate();
     
 }
 
-void odometer::reset_callback(project1::Reset::Request  &req,                 project1::Reset::Response &res){
+bool odometer::reset_callback(project1::Reset_Odometry::Request  &req, project1::Reset_Odometry::Response &res){
+    res.x = this->x;
+    res.y = this->y;
+    res.theta = this->theta;
     
+    this->x = req.x;
+    this->y = req.y;
+    this->theta = req.theta;
     
+    ROS_INFO("Request to reset the pose of the odometry to [%f,%f,%f]  - Responding with old pose: [%f,%f,%f]",
+        (double)req.x, (double)req.y, (double)req.theta, (double)res.x, (double)res.y, (double)res.theta);
     
-//    odometer::publish();
+    return true;
 }
 
 void odometer::integrate(void){
@@ -107,9 +116,7 @@ void odometer::integrate(void){
 void odometer::publish(void){
     nav_msgs::Odometry odom_msg;
     
-    odom_msg.data(1) = this->x;
-    odom_msg.data(2) = this->y;
-    odom_msg.data(3) = this->theta;
+    
     
     output_publisher.publish(odom_msg);
 }

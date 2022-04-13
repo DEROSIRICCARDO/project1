@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 
 #include "nav_msgs/Odometry.h"
-#include <project1/Reset.h>
+#include <project1/Reset_Odometry.h>
 
 #define NAME_OF_THIS_NODE "odometer"
 
@@ -23,14 +23,14 @@ class odometer  //header of the class
     
     
     /* Parameters from ROS parameter server */
-    float loopRate;
+    double loopRate;
     
 
     /* ROS topic callbacks */
     void input_MessageCallback(const nav_msgs::Odometry::ConstPtr& msg);
     
     /* ROS service callbacks */
-    bool reset_callback(project1::Reset::Request  &req,                 project1::Reset::Response &res);
+    bool reset_callback(project1::Reset::Request, project1::Reset::Response);
     
     /* dynamics reconfigure callback*/
     bool int_method_callback(project1::integration_methodConfig &config, uint32_t level)
@@ -42,8 +42,8 @@ class odometer  //header of the class
     
     /* Node state variables */
     int integration_method;
-    float x, y, theta;
-    float vel, omega;
+    double x, y, theta;
+    double vel_x, vel_y, omega;
   
     
 
