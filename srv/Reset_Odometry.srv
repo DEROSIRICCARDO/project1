@@ -1,0 +1,12 @@
+#new pose
+double x
+double y
+double theta
+
+---
+#old pose
+double x
+double y
+double theta
+
+

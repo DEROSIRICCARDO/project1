@@ -1,0 +1,5 @@
+# Robot parameters
+  /omnirobot/l: 1.0         # x distance from the center
+  /omnirobot/w: 10          # y distance from the center
+  /omnirobot/r: 1           # wheel radius
+
