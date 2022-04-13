@@ -1,5 +1,5 @@
 #include "odometry/odometry.h"
-#include "nav_msgs/Odometry.h"
+#include "geometry_msgs/TwistStamped.h"
 #include <project1/Reset_Odometry.h>
 #include <dynamic_reconfigure/server.h>
 #include <project1/integration_methodsConfig.h>
@@ -22,7 +22,7 @@ void odometer::Prepare(void)
     this->output_publisher = this->Handle.advertise<nav_msgs::Odometry>("/odom", 1);
     
     /*Ros services*/
-    this->server = this->Handle.advertiseService<project1::Reset_Odometry::Request, project1::Reset_Odometry::Response>("reset odometry",&odometer::reset_callback, this);
+    this->server = this->Handle.advertiseService<project1::Reset_Odometry::Request, project1::Reset_Odometry::Response>("reset odometry", &odometer::reset_callback, this);
     
     /*dynamic reconfigure*/
     dynamic_reconfigure::Server<project1::integration_methodsConfig> dynServer;
@@ -31,15 +31,18 @@ void odometer::Prepare(void)
     
 
     /* Initialize node state */
-    this->vel = 0.0;
-    this->omega = 0.0;
+    this->current_time = ros::Time::now();
+    this->past_time = ros::Time::now();
     
     this->x = 0.0;
     this->y = 0.0;
     this->theta = 0.0;
-    this->integration_method = 0.0;
-
     
+    this->vel_x = 0.0;
+    this->vel_y = 0.0;
+    this->omega = 0.0;
+    
+    this->integration_method = 0;
 
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 }
@@ -69,12 +72,12 @@ void odometer::Shutdown(void)
     ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
 }
 
-void odometer::input_MessageCallback(const geometry_msgs::TwistedStamped::ConstPtr& msg)
+void odometer::input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel)
 {
     /* Read message and store information */
-    this->vel_x = msg.linear.x;
-    this->vel_y = msg.linear.y;
-    this->omega = msg.angular.z;
+    this->vel_x = cmd_vel.linear.x;
+    this->vel_y = cmd_vel.linear.y;
+    this->omega = cmd_vel.angular.z;
     
     integrate();
     
@@ -95,22 +98,39 @@ bool odometer::reset_callback(project1::Reset_Odometry::Request  &req, project1:
     return true;
 }
 
+void int_method_callback(project1::integration_methodsConfig &config, uint32 level){
+    ROS_INFO("Reconfigure requesr: %d - Level %d",
+             config.integration_method);
+    
+    this->integration_method = config.integration_method;
+}
+
 void odometer::integrate(void){
     
-    switch (integration_method) {
-        case <#constant#>:
-            <#statements#>
+    this-> current_time = ros::Time::now();
+    double Ts = (this->current_time - this->past_time).toSec();
+    double delta_x, delta_y, delta_theta;
+    
+    switch (this_>integration_method) {
+        case 'Euler':
+            delta_x = vel_x*Ts*std::cos(theta) - vel_y*Ts*std::sin(theta);
+            delta_y = vel_x*Ts*std::sin(theta) + vel_y*Ts*std::cos(theta);
+            delta_theta = omega * Ts;
             break;
             
-        case <#constant#>:
-            <#statements#>
+        case 'Runge-Kutta':
+            delta_x = vel_x*Ts*std::cos(theta+omega*Ts/2) - vel_y*Ts*std::sin(theta+omega*Ts/2);
+            delta_y = vel_y*Ts*std::sin(theta+omega*Ts/2) - vel_y*Ts*std::cos(theta+omega*Ts/2);
+            delta_theta = omega * Ts;
             break;
             
-        
     }
     
+    this->x += delta_x;
+    this->y += delta_y;
+    this->theta += delta_theta;
     
-    
+    this->past_time = this->current_time;
 }
 
 void odometer::publish(void){
