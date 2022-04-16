@@ -1,12 +1,12 @@
 #new pose
-double x
-double y
-double theta
+float64 x
+float64 y
+float64 theta
 
 ---
 #old pose
-double x
-double y
-double theta
+float64 x
+float64 y
+float64 theta
 
 

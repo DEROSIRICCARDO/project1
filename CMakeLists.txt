@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   dynamic_reconfigure
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -110,6 +111,8 @@ catkin_package(
   DEPENDS system_lib
 )
 
+catkin_package(CATKIN_DEPENDS message_runtime)
+
 ###########
 ## Build ##
 ###########
@@ -129,7 +132,7 @@ include_directories(
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
- add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+## add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -149,14 +152,11 @@ include_directories(
 ## Specify libraries to link a library or executable target against
  
 ## odometer
- add_executable(odometer src/odom_node.cpp)
+ add_executable(odometer src/Odometer.cpp src/odom_node.cpp)
  add_dependencies(odometer ${catkin_EXPORTED_TARGETS})
  target_link_libraries(odometer ${catkin_LIBRARIES})
  
-## odometer node
- add_executable(odom_node src/odom_node.cpp)
- add_dependencies(odom_node ${catkin_EXPORTED_TARGETS})
- target_link_libraries(odom_node ${catkin_LIBRARIES})
+
 
  
 #############

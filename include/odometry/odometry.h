@@ -3,10 +3,15 @@
 
 #include "ros/ros.h"
 
+#include "std_msgs/Float64MultiArray.h"
+#include "std_msgs/Float64.h"
 #include "geometry_msgs/TwistStamped.h"
-#include <project1/Reset_Odometry.h>
-#include <dynamic_reconfigure/server.h>
-#include <project1/integration_methodsConfig.h>
+#include "nav_msgs/Odometry.h"
+
+#include "project1/Reset_Odometry.h"
+#include "dynamic_reconfigure/server.h"
+#include "project1/integration_methodsConfig.h"
+
 
 #define NAME_OF_THIS_NODE "odometer"
 
@@ -32,10 +37,11 @@ class odometer  //header of the class
     void input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel);
     
     /* ROS service callbacks */
-    bool reset_callback(project1::Reset::Request &req, project1::Reset::Response &res);
+    bool reset_callback(project1::Reset_Odometry::Request& req,
+    project1::Reset_Odometry::Response& res);
     
     /* dynamics reconfigure callback*/
-    bool int_method_callback(project1::integration_methodConfig &config, uint32_t level)
+    void int_method_callback(project1::integration_methodsConfig &config, uint32_t level);
      
     /*auxiliary functions*/
     void integrate(void);
