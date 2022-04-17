@@ -1,9 +1,6 @@
 #include "odometry/odometry.h"
 
 
-
-
-
 void odometer::Prepare(void)
 {
     /* Retrieve parameters from ROS parameter server */
@@ -53,16 +50,7 @@ void odometer::RunPeriodically(void)
     // Wait other nodes start
     sleep(1.0);
     
-    ros::Rate loop_rate(this->loopRate);
-
-
-    while (ros::ok())
-    {
-
-        ros::spinOnce();
-        loop_rate.sleep();
-
-    }
+    ros::spin();
 }
 
 void odometer::Shutdown(void)
