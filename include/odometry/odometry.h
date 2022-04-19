@@ -28,6 +28,7 @@ class odometer  //header of the class
     /* Ros service*/
     ros::ServiceServer server;
 
+    /* Dynamic reconfigure server*/
     dynamic_reconfigure::Server<project1::integration_methodsConfig> dynServer;
 
     
