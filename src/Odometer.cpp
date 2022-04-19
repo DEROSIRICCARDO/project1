@@ -1,5 +1,7 @@
 #include "odometry/odometry.h"
 
+#include <dynamic_reconfigure/server.h>
+#include <project1/integration_methodsConfig.h>
 
 void odometer::Prepare(void)
 {
@@ -17,10 +19,10 @@ void odometer::Prepare(void)
     this->output_publisher = this->Handle.advertise<nav_msgs::Odometry>("/odom", 1);
     
     /*Ros services*/
-    this->server = this->Handle.advertiseService("reset odometry", &odometer::reset_callback, this);
+    this->server = this->Handle.advertiseService("reset_odometry", &odometer::reset_callback, this);
     
     /*dynamic reconfigure*/
-    dynamic_reconfigure::Server<project1::integration_methodsConfig> dynServer;
+    
     dynamic_reconfigure::Server<project1::integration_methodsConfig>::CallbackType f;
     f = boost::bind(&odometer::int_method_callback, this, _1, _2);
     dynServer.setCallback(f);
@@ -99,13 +101,13 @@ void odometer::integrate(void){
     double delta_x, delta_y, delta_theta;
     
     switch (this->integration_method) {
-        case '0':
+        case 0:
             delta_x = vel_x*Ts*std::cos(theta) - vel_y*Ts*std::sin(theta);
             delta_y = vel_x*Ts*std::sin(theta) + vel_y*Ts*std::cos(theta);
             delta_theta = omega * Ts;
             break;
             
-        case '1':
+        case 1:
             delta_x = vel_x*Ts*std::cos(theta+omega*Ts/2) - vel_y*Ts*std::sin(theta+omega*Ts/2);
             delta_y = vel_y*Ts*std::sin(theta+omega*Ts/2) - vel_y*Ts*std::cos(theta+omega*Ts/2);
             delta_theta = omega * Ts;
@@ -116,8 +118,10 @@ void odometer::integrate(void){
     this->x += delta_x;
     this->y += delta_y;
     this->theta += delta_theta;
-    
+
     this->past_time = this->current_time;
+
+    ROS_INFO("supposed pose is [%f,%f,%f], integrated with method %d", (double)this->x, (double)this->y, (double)this->theta, this->integration_method);
 }
 
 void odometer::publish(void){

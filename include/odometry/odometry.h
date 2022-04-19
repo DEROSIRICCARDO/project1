@@ -9,8 +9,8 @@
 #include "nav_msgs/Odometry.h"
 
 #include "project1/Reset_Odometry.h"
-#include "dynamic_reconfigure/server.h"
-#include "project1/integration_methodsConfig.h"
+#include <dynamic_reconfigure/server.h>
+#include <project1/integration_methodsConfig.h>
 
 
 #define NAME_OF_THIS_NODE "odometer"
@@ -27,7 +27,9 @@ class odometer  //header of the class
     
     /* Ros service*/
     ros::ServiceServer server;
-    
+
+    dynamic_reconfigure::Server<project1::integration_methodsConfig> dynServer;
+
     
     /* Parameters from ROS parameter server */
     double loopRate;
