@@ -6,13 +6,14 @@
 void odometer::Prepare(void)
 {
     /* Retrieve parameters from ROS parameter server */
-    std::string FullParamName;
+    //std::string FullParamName;
 
     
-    FullParamName = ros::this_node::getName()+"/loopRate";
+    /*FullParamName = ros::this_node::getName()+"/loopRate";
     if (false == Handle.getParam(FullParamName, loopRate))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-
+    */
+    
     
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &odometer::input_MessageCallback, this);
