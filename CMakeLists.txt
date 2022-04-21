@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   message_generation
   dynamic_reconfigure
+  tf tf2 tf2_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -158,9 +159,9 @@ include_directories(
 
  
 ## velocity
- add_executable(velocity src/velocity.cpp src/velocity_node.cpp)
- add_dependencies(velocity ${catkin_EXPORTED_TARGETS})
- target_link_libraries(velocity ${catkin_LIBRARIES})
+## add_executable(velocity src/velocity.cpp src/velocity_node.cpp)
+## add_dependencies(velocity ${catkin_EXPORTED_TARGETS})
+## target_link_libraries(velocity ${catkin_LIBRARIES})
  
  ## reset client
  add_executable(reset_client src/client.cpp)

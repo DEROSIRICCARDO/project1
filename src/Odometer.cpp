@@ -10,13 +10,13 @@ void odometer::Prepare(void)
     /*Ros services*/
     this->server = this->Handle.advertiseService("reset_odometry", &odometer::reset_callback, this);
     
-    /*dynamic reconfigure*/
+    /* dynamic reconfigure*/
     
     dynamic_reconfigure::Server<project1::integration_methodsConfig>::CallbackType f;
     f = boost::bind(&odometer::int_method_callback, this, _1, _2);
     dynServer.setCallback(f);
-    
-
+   
+      
     /* Initialize node state */
     this->current_time = ros::Time::now();
     this->past_time = ros::Time::now();
