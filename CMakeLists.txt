@@ -162,6 +162,11 @@ include_directories(
  add_dependencies(velocity ${catkin_EXPORTED_TARGETS})
  target_link_libraries(velocity ${catkin_LIBRARIES})
  
+ ## reset client
+ add_executable(reset_client src/client.cpp)
+ add_dependencies(reset_client ${catkin_EXPORTED_TARGETS})
+ target_link_libraries(reset_client ${catkin_LIBRARIES})
+ 
 
 
 #############
