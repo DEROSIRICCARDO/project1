@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "project1/Reset_Odometry.h"
 #include "geometry_msgs/PoseStamped.h"
+#include "tf/transform_datatypes.h"
 
 
 class Reset {
@@ -10,27 +11,38 @@ private:
     ros::ServiceClient client;
     project1::Reset_Odometry srv;
     
-    geometry_msgs::PoseStamped true_pose;
-    
     bool published;
     
+    double x,y,theta;
+
     void countCallback(const geometry_msgs::PoseStamped::ConstPtr& true_pose) {
         
-        this->true_pose = true_pose;
-        
+        this->x = true_pose->pose.position.x;
+        this->y = true_pose->pose.position.y;
+
+        double quatx= true_pose->pose.orientation.x;
+        double quaty= true_pose->pose.orientation.y;
+        double quatz= true_pose->pose.orientation.z;
+        double quatw= true_pose->pose.orientation.w;
+	
+	tf::Quaternion q(quatx, quaty, quatz, quatw);
+        tf::Matrix3x3 m(q);
+
+        double roll, pitch, yaw;
+        m.getRPY(roll, pitch, yaw);
+
+	this->theta = yaw;
+
         resetFunction();
-    }
+    };
     
     
     void resetFunction(){
-        srv.request.x = this->true_pose.pose.point.x;
-        srv.request.y = this->true_pose.pose.point.y;
-        
-        tf::Pose pose;
-        tf::poseMsgToTF(true_pose.pose, pose);
-        
-        srv.request.theta = tf::getYaw(pose.getRotation());
-        
+        srv.request.x = this->x;
+	srv.request.y = this->y;
+        srv.request.theta = this->theta;
+
+   	      
         if (client.call(srv))
         {
           ROS_INFO("Old pose: [%f, %f, %f]", (double)srv.response.x, (double)srv.response.y, (double)srv.response.theta);
@@ -40,7 +52,7 @@ private:
         {
           ROS_ERROR("Failed to call service reset_odometry, retry");
         }
-    }
+    };
     
     
     
@@ -49,23 +61,23 @@ public:
       // all initializations here
         ros::NodeHandle n;
         this->sub = this->n.subscribe("/robot/pose", 1, &Reset::countCallback, this);
-        this->client = n.serviceClient<project1:Reset_Odometry>("reset_odometry");
-    }
+        this->client = n.serviceClient<project1::Reset_Odometry>("reset_odometry");
+    };
     
-    main_loop(){
+    void main_loop(){
         sleep(1.0);
         ros::Rate rate(20);
         
         while(!published){
             
-            ros::spinOnce()
+            ros::spinOnce();
             rate.sleep();
             
-        }
+        };
         
-    }
+    };
     
-}
+};
 
 
 int main(int argc, char **argv)
@@ -76,7 +88,7 @@ int main(int argc, char **argv)
     
     my_reset.main_loop();
     
-    ROS_INFO("node reset_client is shutting down")
+    ROS_INFO("node reset_client is shutting down");
 
   return 0;
 }
