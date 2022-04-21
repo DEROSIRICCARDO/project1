@@ -155,6 +155,12 @@ include_directories(
  add_executable(odometer src/Odometer.cpp src/odom_node.cpp)
  add_dependencies(odometer ${catkin_EXPORTED_TARGETS})
  target_link_libraries(odometer ${catkin_LIBRARIES})
+
+ 
+## velocity
+ add_executable(velocity src/velocity.cpp src/velocity_node.cpp)
+ add_dependencies(velocity ${catkin_EXPORTED_TARGETS})
+ target_link_libraries(velocity ${catkin_LIBRARIES})
  
 
 
