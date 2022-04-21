@@ -1,7 +1,5 @@
 #include "odometry/odometry.h"
 
-#include <dynamic_reconfigure/server.h>
-#include <project1/integration_methodsConfig.h>
 
 void odometer::Prepare(void)
 {
@@ -56,8 +54,8 @@ void odometer::input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr
 {
     this->current_time = cmd_vel->header.stamp;
     
-    odom::integrate();
-    odom::publish();
+    odometer::integrate();
+    odometer::publish();
     
     this->vel_x = cmd_vel->twist.linear.x;
     this->vel_y = cmd_vel->twist.linear.y;
@@ -120,7 +118,8 @@ void odometer::integrate(void){
 
 void odometer::publish(void){
     //We create a quaternion based on the the yaw of the robot
-    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(theta);
+    tf2::Quaternion odom_quat;
+    odom_quat.setRPY(0,0,this->theta);
 
     //first, we'll publish the transform over tf
     geometry_msgs::TransformStamped odom_trans;
@@ -131,7 +130,10 @@ void odometer::publish(void){
     odom_trans.transform.translation.x = this->x;
     odom_trans.transform.translation.y = this->y;
     odom_trans.transform.translation.z = 0.0;
-    odom_trans.transform.rotation = odom_quat;
+    odom_trans.transform.rotation.x = odom_quat.x();
+    odom_trans.transform.rotation.y = odom_quat.y();
+    odom_trans.transform.rotation.z = odom_quat.z();
+    odom_trans.transform.rotation.w = odom_quat.w();
 
     //send the transform
     odom_broadcaster.sendTransform(odom_trans);
@@ -145,7 +147,7 @@ void odometer::publish(void){
     odom.pose.pose.position.x = this->x;
     odom.pose.pose.position.y = this->y;
     odom.pose.pose.position.z = 0.0;
-    odom.pose.pose.orientation = odom_quat;
+    odom.pose.pose.orientation = odom_trans.transform.rotation;
 
     //set the velocity
     odom.child_frame_id = "base_link";
