@@ -64,13 +64,16 @@ void odometer::Shutdown(void)
 
 void odometer::input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel)
 {
-    /* Read message and store information */
+    this->current_time = cmd_vel->header.stamp;
+    
+    odom::integrate();
+    odom::publish();
+    
     this->vel_x = cmd_vel->twist.linear.x;
     this->vel_y = cmd_vel->twist.linear.y;
     this->omega = cmd_vel->twist.angular.z;
     
-    integrate();
-    
+    this->past_time = this->current_time;
 }
 
 bool odometer::reset_callback(project1::Reset_Odometry::Request&  req, project1::Reset_Odometry::Response& res){
@@ -158,15 +161,13 @@ void odometer::publish(void){
     odom.child_frame_id = "base_link";
     odom.twist.twist.linear.x = this->vel_x;
     odom.twist.twist.linear.y = this->vel_y;
+    odom.twist.twist.linear.z = 0.0;
+    odom.twist.twist.angular.x = 0.0;
+    odom.twist.twist.angular.y = 0.0;
     odom.twist.twist.angular.z = this->omega;
 
     //publish the message
-    odom_pub.publish(odom);
-
-    this->past_time = this->current_time;
-    
-    
-    output_publisher.publish(odom_msg); // ???
+    output_publisher.publish(odom);
     
 }
 
