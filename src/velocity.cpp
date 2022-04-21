@@ -21,8 +21,12 @@ void velocity::Prepare(void)
     this->current_time = ros::Time::now();
     this->past_time = ros::Time::now();
     
-    this->position_curr = 0.0;
-    this->position_past = 0.0;
+    double i = 0;
+    while(i<4){
+        this->position_curr[i] = 0.0;
+        this->position_past[i] = 0.0;
+        i = i + 1;
+    }
     double r = 0.07, lx = 0.2, ly = 0.169, T = 5, N = 42;
 
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
@@ -34,8 +38,13 @@ void velocity::RunPeriodically(void)
 
     // Wait other nodes start
     sleep(1.0);
-    
-    ros::spinOnce();
+
+    ros::Rate r(10);
+
+    while (ros::ok()){
+        ros::spinOnce();
+        r.sleep();
+    }
 }
 
 void velocity::Shutdown(void)
@@ -47,26 +56,40 @@ void velocity::Shutdown(void)
 void velocity::input_MessageCallback(const sensor_msgs::JointState::ConstPtr& wheel_state)
 {
     /* Read message and store information */
-    this->position_curr[] = wheel_state->position[];
+    double i = 0;
+    while(i<4){
+        this->position_curr[i] = wheel_state->position[i];
+        i = i + 1;
+    }
     
-    integrate();
-    
+    compute_velocity();
 }
 
-void velocity::integrate(void){
+void velocity::compute_velocity(void){
     
     this-> current_time = ros::Time::now();
     double Ts = (this->current_time - this->past_time).toSec();
-    double ticks[] = this->position_curr[] - this->position_past[];
-    double wheel_vel_fr[4];
+    double i = 0;
+    while (i < 4){
+        double ticks[i] = this->position_curr[i] - this->position_past[i];
+        i = i + 1;
+    }
+    double wheel_vel[4], mat[3][4] = r/4 * [1 1 1 1; -1 1 1 -1; -1/(lx+ly) 1/(lx+ly) -1/(lx+ly) 1/(lx+ly)];
 
-    wheel_vel[] = ticks[] / Ts / N / T * 2 * 3.14;
-    this->vel[] = r/4 * [1 1 1 1; -1 1 1 -1; -1/(lx+ly) 1/(lx+ly) -1/(lx+ly) 1/(lx+ly)] * 		wheel_vel[];
+    double i = 0;
+    while (i < 3){
+        double j = 0;
+        while (j < 4){
+            wheel_vel[j] = ticks[j] / Ts / N / T * 2 * 3.14;
+            this->vel[i] = this->vel[i] + mat[i][j] * wheel_vel[j];
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+
+    ROS_INFO("supposed velocity is [%f,%f,%f]", (double)this->vel[0], (double)this->vel[1], (double)this->vel[2]);
 
 
     this->past_time = this->current_time;
     this->position_past = this->position_curr;
 }
-
-
- 
