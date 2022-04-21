@@ -22,20 +22,15 @@ class velocity  //header of the class
     ros::Publisher output_publisher;
 
     /* ROS topic callbacks */
-    void input_MessageCallback(const sensor_msgs::JointState::ConstPtr& cmd_vel);
-    
-    /* dynamics reconfigure callback*/
-    void int_method_callback(project1::integration_methodsConfig &config, uint32_t level);
+    void input_MessageCallback(const sensor_msgs::JointState::ConstPtr& wheel_state);
      
     /*auxiliary functions*/
-    void integrate(void);
+    void compute_velocity(void);
     void publish(void);
     
     
     /* Node state variables */
     ros::Time current_time, past_time;
-    
-    int integration_method;
     
     double position;
   
