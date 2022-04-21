@@ -11,6 +11,9 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 
+#include <tf/transform_broadcaster.h>
+#include <nav_msgs/Odometry.h>
+
 #include "project1/Reset_Odometry.h"
 #include <dynamic_reconfigure/server.h>
 #include <project1/integration_methodsConfig.h>
