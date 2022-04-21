@@ -126,11 +126,48 @@ void odometer::integrate(void){
 }
 
 void odometer::publish(void){
-    nav_msgs::Odometry odom_msg;
+    //We create a quaternion based on the the yaw of the robot
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(theta);
+
+    //first, we'll publish the transform over tf
+    geometry_msgs::TransformStamped odom_trans;
+    odom_trans.header.stamp = this->current_time;
+    odom_trans.header.frame_id = "odom";
+    odom_trans.child_frame_id = "base_link";
+
+    odom_trans.transform.translation.x = this->x;
+    odom_trans.transform.translation.y = this->y;
+    odom_trans.transform.translation.z = 0.0;
+    odom_trans.transform.rotation = odom_quat;
+
+    //send the transform
+    odom_broadcaster.sendTransform(odom_trans);
+
+    //next, we'll publish the odometry message over ROS
+    nav_msgs::Odometry odom;
+    odom.header.stamp = this->current_time;
+    odom.header.frame_id = "odom";
+
+    //set the position
+    odom.pose.pose.position.x = this->x;
+    odom.pose.pose.position.y = this->y;
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = odom_quat;
+
+    //set the velocity
+    odom.child_frame_id = "base_link";
+    odom.twist.twist.linear.x = this->vel_x;
+    odom.twist.twist.linear.y = this->vel_y;
+    odom.twist.twist.angular.z = this->omega;
+
+    //publish the message
+    odom_pub.publish(odom);
+
+    this->past_time = this->current_time;
     
     
+    output_publisher.publish(odom_msg); // ???
     
-    output_publisher.publish(odom_msg);
 }
 
  
