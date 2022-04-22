@@ -116,7 +116,7 @@ void odometer::integrate(void){
     ROS_INFO("supposed pose is [%f,%f,%f], integrated with method %d", (double)this->x, (double)this->y, (double)this->theta, this->integration_method);
 }
 
-/*void odometer::publish(void){
+void odometer::publish(void){
     //We create a quaternion based on the the yaw of the robot
     tf2::Quaternion odom_quat;
     odom_quat.setRPY(0,0,this->theta);
@@ -162,6 +162,3 @@ void odometer::integrate(void){
     output_publisher.publish(odom);
     
 }
-
- 
-*/
