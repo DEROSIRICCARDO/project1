@@ -1,20 +1,8 @@
 #include "odometry/odometry.h"
 
-#include <dynamic_reconfigure/server.h>
-#include <project1/integration_methodsConfig.h>
 
 void odometer::Prepare(void)
 {
-    /* Retrieve parameters from ROS parameter server */
-    //std::string FullParamName;
-
-    
-    /*FullParamName = ros::this_node::getName()+"/loopRate";
-    if (false == Handle.getParam(FullParamName, loopRate))
-        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-    */
-    
-    
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &odometer::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<nav_msgs::Odometry>("/odom", 1);
@@ -22,13 +10,13 @@ void odometer::Prepare(void)
     /*Ros services*/
     this->server = this->Handle.advertiseService("reset_odometry", &odometer::reset_callback, this);
     
-    /*dynamic reconfigure*/
+    /* dynamic reconfigure*/
     
     dynamic_reconfigure::Server<project1::integration_methodsConfig>::CallbackType f;
     f = boost::bind(&odometer::int_method_callback, this, _1, _2);
     dynServer.setCallback(f);
-    
-
+   
+      
     /* Initialize node state */
     this->current_time = ros::Time::now();
     this->past_time = ros::Time::now();
@@ -64,13 +52,16 @@ void odometer::Shutdown(void)
 
 void odometer::input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel)
 {
-    /* Read message and store information */
+    this->current_time = cmd_vel->header.stamp;
+    
+    odometer::integrate();
+    odometer::publish();
+    
     this->vel_x = cmd_vel->twist.linear.x;
     this->vel_y = cmd_vel->twist.linear.y;
     this->omega = cmd_vel->twist.angular.z;
     
-    integrate();
-    
+    this->past_time = this->current_time;
 }
 
 bool odometer::reset_callback(project1::Reset_Odometry::Request&  req, project1::Reset_Odometry::Response& res){
@@ -127,7 +118,8 @@ void odometer::integrate(void){
 
 /*void odometer::publish(void){
     //We create a quaternion based on the the yaw of the robot
-    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(theta);
+    tf2::Quaternion odom_quat;
+    odom_quat.setRPY(0,0,this->theta);
 
     //first, we'll publish the transform over tf
     geometry_msgs::TransformStamped odom_trans;
@@ -138,7 +130,10 @@ void odometer::integrate(void){
     odom_trans.transform.translation.x = this->x;
     odom_trans.transform.translation.y = this->y;
     odom_trans.transform.translation.z = 0.0;
-    odom_trans.transform.rotation = odom_quat;
+    odom_trans.transform.rotation.x = odom_quat.x();
+    odom_trans.transform.rotation.y = odom_quat.y();
+    odom_trans.transform.rotation.z = odom_quat.z();
+    odom_trans.transform.rotation.w = odom_quat.w();
 
     //send the transform
     odom_broadcaster.sendTransform(odom_trans);
@@ -152,21 +147,19 @@ void odometer::integrate(void){
     odom.pose.pose.position.x = this->x;
     odom.pose.pose.position.y = this->y;
     odom.pose.pose.position.z = 0.0;
-    odom.pose.pose.orientation = odom_quat;
+    odom.pose.pose.orientation = odom_trans.transform.rotation;
 
     //set the velocity
     odom.child_frame_id = "base_link";
     odom.twist.twist.linear.x = this->vel_x;
     odom.twist.twist.linear.y = this->vel_y;
+    odom.twist.twist.linear.z = 0.0;
+    odom.twist.twist.angular.x = 0.0;
+    odom.twist.twist.angular.y = 0.0;
     odom.twist.twist.angular.z = this->omega;
 
     //publish the message
-    odom_pub.publish(odom);
-
-    this->past_time = this->current_time;
-    
-    
-    output_publisher.publish(odom_msg); // ???
+    output_publisher.publish(odom);
     
 }
 
