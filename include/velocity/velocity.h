@@ -6,7 +6,6 @@
 #include "std_msgs/Float64MultiArray.h"
 #include "std_msgs/Float64.h"
 #include "sensor_msgs/JointState.h"
-#include "nav_msgs/velocity.h"
 
 
 #define NAME_OF_THIS_NODE "velocity"
@@ -32,8 +31,8 @@ class velocity  //header of the class
     /* Node state variables */
     ros::Time current_time, past_time;
     
-    double position_curr[4], position_past[4];
-    double vel[3]
+    double position_curr[], position_past[];
+    double vel[];
     
 
   public:

@@ -14,20 +14,19 @@ void velocity::Prepare(void)
     
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/wheel_state", 1000, &velocity::input_MessageCallback, this);
-    this->output_publisher = this->Handle.advertise<nav_msgs::velocity>("/velocity", 1000);
+    this->output_publisher = this->Handle.advertise<sensor_msgs::JointState>("/velocity", 1000);
     
 
     /* Initialize node state */
     this->current_time = ros::Time::now();
     this->past_time = ros::Time::now();
     
-    double i = 0;
+    int i = 0;
     while(i<4){
         this->position_curr[i] = 0.0;
         this->position_past[i] = 0.0;
         i = i + 1;
     }
-    double r = 0.07, lx = 0.2, ly = 0.169, T = 5, N = 42;
 
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 }
@@ -56,7 +55,7 @@ void velocity::Shutdown(void)
 void velocity::input_MessageCallback(const sensor_msgs::JointState::ConstPtr& wheel_state)
 {
     /* Read message and store information */
-    double i = 0;
+    int i = 0;
     while(i<4){
         this->position_curr[i] = wheel_state->position[i];
         i = i + 1;
@@ -69,16 +68,21 @@ void velocity::compute_velocity(void){
     
     this-> current_time = ros::Time::now();
     double Ts = (this->current_time - this->past_time).toSec();
-    double i = 0;
+    int r = 0.07, lx = 0.2, ly = 0.169, T = 5, N = 42;
+    int i = 0;
+    double ticks[4];
     while (i < 4){
-        double ticks[i] = this->position_curr[i] - this->position_past[i];
+        ticks[i] = this->position_curr[i] - this->position_past[i];
         i = i + 1;
     }
-    double wheel_vel[4], mat[3][4] = r/4 * [1 1 1 1; -1 1 1 -1; -1/(lx+ly) 1/(lx+ly) -1/(lx+ly) 1/(lx+ly)];
+    double wheel_vel[4];
+    int mat[3][4] = {{r/4, r/4, r/4, r/4,},
+                     {-r/4, r/4, r/4, -r/4},
+                     {-r/4/(lx+ly), r/4/(lx+ly), -r/4/(lx+ly), r/4/(lx+ly)}};
 
-    double i = 0;
+    i = 0;
     while (i < 3){
-        double j = 0;
+        int j = 0;
         while (j < 4){
             wheel_vel[j] = ticks[j] / Ts / N / T * 2 * 3.14;
             this->vel[i] = this->vel[i] + mat[i][j] * wheel_vel[j];
@@ -91,5 +95,9 @@ void velocity::compute_velocity(void){
 
 
     this->past_time = this->current_time;
-    this->position_past = this->position_curr;
+    i = 0;
+    while(i<4){
+        this->position_past[i] = this->position_curr[i];
+        i = i + 1;
+    }
 }
