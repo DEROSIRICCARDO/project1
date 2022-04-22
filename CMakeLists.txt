@@ -159,7 +159,7 @@ include_directories(
 
  
 ## velocity
-## add_executable(velocity src/velocity.cpp src/velocity_node.cpp)
+##add_executable(velocity src/velocity.cpp src/velocity_node.cpp)
 ## add_dependencies(velocity ${catkin_EXPORTED_TARGETS})
 ## target_link_libraries(velocity ${catkin_LIBRARIES})
  

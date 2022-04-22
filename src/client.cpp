@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include "project1/Reset_Odometry.h"
 #include "geometry_msgs/PoseStamped.h"
-#include "tf/transform_datatypes.h"
+#include "tf2/LinearMath/Matrix3x3.h"
 
 
 class Reset {
@@ -25,8 +25,8 @@ private:
         double quatz= true_pose->pose.orientation.z;
         double quatw= true_pose->pose.orientation.w;
 	
-	tf::Quaternion q(quatx, quaty, quatz, quatw);
-        tf::Matrix3x3 m(q);
+	tf2::Quaternion q(quatx, quaty, quatz, quatw);
+        tf2::Matrix3x3 m(q);
 
         double roll, pitch, yaw;
         m.getRPY(roll, pitch, yaw);
