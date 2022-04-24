@@ -15,7 +15,7 @@ private:
     
     double x,y,theta;
 
-    void countCallback(const geometry_msgs::PoseStamped::ConstPtr& true_pose) {
+    void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& true_pose) {
         
         this->x = true_pose->pose.position.x;
         this->y = true_pose->pose.position.y;
@@ -61,7 +61,7 @@ public:
       // all initializations here
         ros::NodeHandle n;
         this->published = false;
-        this->sub = this->n.subscribe("/robot/pose", 1, &Reset::countCallback, this);
+        this->sub = this->n.subscribe("/robot/pose", 1, &Reset::poseCallback, this);
         this->client = n.serviceClient<project1::Reset_Odometry>("reset_odometry");
     };
     
@@ -78,7 +78,7 @@ public:
         
     };
     
-};
+}
 
 
 int main(int argc, char **argv)
