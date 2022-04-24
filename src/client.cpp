@@ -11,7 +11,7 @@ private:
     ros::ServiceClient client;
     project1::Reset_Odometry srv;
     
-    bool published = false;
+    bool published;
     
     double x,y,theta;
 
@@ -60,6 +60,7 @@ public:
     Reset() { // class constructor
       // all initializations here
         ros::NodeHandle n;
+        this->published = false;
         this->sub = this->n.subscribe("/robot/pose", 1, &Reset::countCallback, this);
         this->client = n.serviceClient<project1::Reset_Odometry>("reset_odometry");
     };
