@@ -80,7 +80,7 @@ void inv_velocity::compute_inv_velocity(void){
     this->ome_rl = T/r * (vel_x + vel_y - omega * (l+w));
     this->ome_rr = T/r * (vel_x - vel_y + omega * (l+w));
 
-    ROS_INFO("supposed velocity of the wheels is [%f,%f,%f, %f]", (double)this->ome_fl, (double)this->ome_fr, (double)this->ome_rl, (double)this->ome_rr);
+    ROS_INFO("supposed velocities of the wheels are [%f,%f,%f,%f]", (double)this->ome_fl, (double)this->ome_fr, (double)this->ome_rl, (double)this->ome_rr);
 };
     
     

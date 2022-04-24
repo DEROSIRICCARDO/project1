@@ -33,7 +33,7 @@ void velocity::Prepare(void)
     
     
     /* ROS topics */
-    this->input_subscriber = this->Handle.subscribe("/wheel_state", 1, &velocity::input_MessageCallback, this);
+    this->input_subscriber = this->Handle.subscribe("/wheel_states", 1, &velocity::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<geometry_msgs::TwistStamped>("/cmd_vel", 1);
     
 
@@ -42,7 +42,7 @@ void velocity::Prepare(void)
     this->past_time = ros::Time::now();
     
     for(int i = 0; i<4; i++){
-        vel[i] = 0;
+        this->vel[i] = 0;
     };
     
     for(int i=0; i<4; i++){
@@ -92,12 +92,15 @@ void velocity::compute_velocity(void){
     double ticks[4];
     for (int i = 0; i < 4; i++){
         ticks[i] = this->position_curr[i] - this->position_past[i];
-        i = i + 1;
     };
     double wheel_vel[4];
     double mat[3][4] = {{r/4, r/4, r/4, r/4,},
                      {-r/4, r/4, r/4, -r/4},
                      {-r/4/(l+w), r/4/(l+w), -r/4/(l+w), r/4/(l+w)}};
+
+    
+    for(int i=0; i<3; i++)
+        vel[i] = 0;
 
     for (int i = 0; i < 3; i++){
         for (int j = 0; j < 4; j++){
