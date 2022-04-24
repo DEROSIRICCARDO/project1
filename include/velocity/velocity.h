@@ -3,9 +3,8 @@
 
 #include "ros/ros.h"
 
-#include "std_msgs/Float64MultiArray.h"
-#include "std_msgs/Float64.h"
 #include "sensor_msgs/JointState.h"
+#include "sensor_msgs/TwistStamped"
 
 
 #define NAME_OF_THIS_NODE "velocity"
@@ -29,10 +28,13 @@ class velocity  //header of the class
     
     
     /* Node state variables */
+    
+    ros::Rate LoopRate;
     ros::Time current_time, past_time;
     
     double position_curr[], position_past[];
     double vel[];
+    double l, w, r, T, N;
     
 
   public:

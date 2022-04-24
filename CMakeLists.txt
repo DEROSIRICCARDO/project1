@@ -52,11 +52,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+ add_message_files(
+   FILES
+   Wrpm.msg
+ )
 
 ## Generate services in the 'srv' folder
  add_service_files(
@@ -112,8 +111,6 @@ catkin_package(
   DEPENDS system_lib
 )
 
-catkin_package(CATKIN_DEPENDS message_runtime)
-
 ###########
 ## Build ##
 ###########
@@ -159,14 +156,20 @@ include_directories(
 
  
 ## velocity
-##add_executable(velocity src/velocity.cpp src/velocity_node.cpp)
-## add_dependencies(velocity ${catkin_EXPORTED_TARGETS})
-## target_link_libraries(velocity ${catkin_LIBRARIES})
+ add_executable(velocity src/velocity.cpp src/velocity_node.cpp)
+ add_dependencies(velocity ${catkin_EXPORTED_TARGETS})
+ target_link_libraries(velocity ${catkin_LIBRARIES})
  
- ## reset client
+## reset client
  add_executable(reset_client src/client.cpp)
  add_dependencies(reset_client ${catkin_EXPORTED_TARGETS})
  target_link_libraries(reset_client ${catkin_LIBRARIES})
+ 
+## inverse velocity
+ add_executable(inv_velocity src/inv_velocity.cpp src/inv_velocity_node.cpp)
+ add_dependencies(inv_velocity ${catkin_EXPORTED_TARGETS})
+ target_link_libraries(inv_velocity ${catkin_LIBRARIES})
+
  
 
 

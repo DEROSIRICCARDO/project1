@@ -1,2 +1,2 @@
 # Definition of nodes' loop rates
-/odometer/loopRate: 10 #Hz
+/velocity/loopRate: 10 #Hz

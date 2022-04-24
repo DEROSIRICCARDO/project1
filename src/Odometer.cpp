@@ -125,7 +125,7 @@ void odometer::publish(void){
     geometry_msgs::TransformStamped odom_trans;
     odom_trans.header.stamp = this->current_time;
     odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "base_link";
+    odom_trans.child_frame_id = "robot";
 
     odom_trans.transform.translation.x = this->x;
     odom_trans.transform.translation.y = this->y;
