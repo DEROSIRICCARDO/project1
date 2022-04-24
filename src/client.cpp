@@ -63,12 +63,14 @@ public:
         this->published = false;
         this->sub = this->n.subscribe("/robot/pose", 1, &Reset::poseCallback, this);
         this->client = n.serviceClient<project1::Reset_Odometry>("reset_odometry");
+        ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
     };
     
     void main_loop(){
         sleep(1.0);
         ros::Rate rate(20);
         
+        ROS_INFO("Node %s running.", ros::this_node::getName().c_str());
         while(!published&&ros::ok()){
             
             ros::spinOnce();
