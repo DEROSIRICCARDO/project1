@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 
 #include "sensor_msgs/JointState.h"
-#include "sensor_msgs/TwistStamped"
+#include "geometry_msgs/TwistStamped.h"
 
 
 #define NAME_OF_THIS_NODE "velocity"
@@ -29,11 +29,11 @@ class velocity  //header of the class
     
     /* Node state variables */
     
-    ros::Rate LoopRate;
+    double LoopRate;
     ros::Time current_time, past_time;
     
-    double position_curr[], position_past[];
-    double vel[];
+    double position_curr[4], position_past[4];
+    double vel[3];
     double l, w, r, T, N;
     
 

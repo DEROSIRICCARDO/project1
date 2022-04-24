@@ -6,8 +6,8 @@ void velocity::Prepare(void)
     std::string FullParamName;
     std::string PartialName = "omnirobot";
     
-    FullParamName = ros::this_node::getName()+"/loopRate";
-    if (false == Handle.getParam(FullParamName, loopRate))
+    FullParamName = ros::this_node::getName()+"/LoopRate";
+    if (false == Handle.getParam(FullParamName, LoopRate))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
     
     FullParamName = PartialName+"/l";
@@ -34,18 +34,18 @@ void velocity::Prepare(void)
     
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/wheel_state", 1, &velocity::input_MessageCallback, this);
-    this->output_publisher = this->Handle.advertise<sensor_msgs::TwistStamped>("/cmd_vel", 1);
+    this->output_publisher = this->Handle.advertise<geometry_msgs::TwistStamped>("/cmd_vel", 1);
     
 
     /* Initialize node state */
     this->current_time = ros::Time::now();
     this->past_time = ros::Time::now();
     
-    for(int i = 0, i<4, i++){
+    for(int i = 0; i<4; i++){
         vel[i] = 0;
     };
     
-    for(int i=0, i<4, i++){
+    for(int i=0; i<4; i++){
         this->position_curr[i] = 0.0;
         this->position_past[i] = 0.0;
     };
@@ -57,6 +57,8 @@ void velocity::RunPeriodically(void)
 {
     ROS_INFO("Node %s running.", ros::this_node::getName().c_str());
 
+    ros::Rate LoopRate(this->LoopRate);
+
     // Wait other nodes start
     sleep(1.0);
 
@@ -65,7 +67,7 @@ void velocity::RunPeriodically(void)
         ros::spinOnce();
         velocity::compute_velocity();
         velocity::publish();
-        loopRate.sleep();
+        LoopRate.sleep();
     };
 };
 
@@ -78,7 +80,7 @@ void velocity::Shutdown(void)
 void velocity::input_MessageCallback(const sensor_msgs::JointState::ConstPtr& wheel_state)
 {
     /* Read message and store information */
-    for(int i=0, i<4, i++){
+    for(int i=0; i<4; i++){
         this->position_curr[i] = wheel_state->position[i];
     };
 };
@@ -88,17 +90,17 @@ void velocity::compute_velocity(void){
     this-> current_time = ros::Time::now();
     double Ts = (this->current_time - this->past_time).toSec();
     double ticks[4];
-    for (int i = 0, i < 4, i++){
+    for (int i = 0; i < 4; i++){
         ticks[i] = this->position_curr[i] - this->position_past[i];
         i = i + 1;
     };
     double wheel_vel[4];
-    int mat[3][4] = {{r/4, r/4, r/4, r/4,},
+    double mat[3][4] = {{r/4, r/4, r/4, r/4,},
                      {-r/4, r/4, r/4, -r/4},
-                     {-r/4/(lx+ly), r/4/(lx+ly), -r/4/(lx+ly), r/4/(lx+ly)}};
+                     {-r/4/(l+w), r/4/(l+w), -r/4/(l+w), r/4/(l+w)}};
 
-    for (int i = 0, i < 3, i++){
-        for (int j = 0, j < 4, j++){
+    for (int i = 0; i < 3; i++){
+        for (int j = 0; j < 4; j++){
             wheel_vel[j] = ticks[j] / Ts / N / T * 2 * 3.14;
             this->vel[i] = this->vel[i] + mat[i][j] * wheel_vel[j];
         };
@@ -109,14 +111,14 @@ void velocity::compute_velocity(void){
 
     this->past_time = this->current_time;
 
-    for(int i = 0, i<4, i++){
+    for(int i = 0; i<4; i++){
         this->position_past[i] = this->position_curr[i];
     };
 };
     
     
 void velocity::publish(){
-    sensor_msgs::TwistStamped cmd_vel;
+    geometry_msgs::TwistStamped cmd_vel;
     cmd_vel.header.stamp = this->current_time;
     cmd_vel.header.frame_id = "robot";
         
@@ -129,6 +131,5 @@ void velocity::publish(){
     cmd_vel.twist.angular.z = this->vel[2];
         
     output_publisher.publish(cmd_vel);
-    };
+};
     
-}

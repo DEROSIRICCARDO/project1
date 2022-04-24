@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 
-#include "sensor_msgs/TwistStamped"
+#include "geometry_msgs/TwistStamped.h"
 #include "project1/Wrpm.h"
 
 
@@ -20,7 +20,7 @@ class inv_velocity  //header of the class
     ros::Publisher output_publisher;
 
     /* ROS topic callbacks */
-    void input_MessageCallback(const sensor_msgs::TwistStamped::ConstPtr& cmd_vel);
+    void input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel);
      
     /*auxiliary functions*/
     void compute_inv_velocity(void);

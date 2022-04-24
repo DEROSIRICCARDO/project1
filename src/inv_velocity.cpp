@@ -30,14 +30,11 @@ void inv_velocity::Prepare(void)
     
     
     /* ROS topics */
-    this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &velocity::input_MessageCallback, this);
+    this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &inv_velocity::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<project1::Wrpm>("/wheels_rpm", 1);
     
 
     /* Initialize node state */
-    this->current_time = ros::Time::now();
-    this->past_time = ros::Time::now();
-    
     this->vel_x = 0;
     this->vel_y = 0;
     this->omega = 0;
@@ -65,7 +62,7 @@ void inv_velocity::Shutdown(void)
     ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
 };
 
-void inv_velocity::input_MessageCallback(const sensor_msgs::TwistStamped::ConstPtr& cmd_vel)
+void inv_velocity::input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel)
 {
     /* Read message and store information */
     this->vel_x = cmd_vel->twist.linear.x;
@@ -84,7 +81,7 @@ void inv_velocity::compute_inv_velocity(void){
     this->ome_rr = T/r * (vel_x - vel_y + omega * (l+w));
 
     ROS_INFO("supposed velocity of the wheels is [%f,%f,%f, %f]", (double)this->ome_fl, (double)this->ome_fr, (double)this->ome_rl, (double)this->ome_rr);
-    };
+};
     
     
 void inv_velocity::publish(void){
@@ -96,8 +93,8 @@ void inv_velocity::publish(void){
     wheels_rpm.rpm_rl = this->ome_rl;
     
     output_publisher.publish(wheels_rpm);
-    };
+};
     
-}
+
 
  
