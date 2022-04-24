@@ -11,7 +11,7 @@ private:
     ros::ServiceClient client;
     project1::Reset_Odometry srv;
     
-    bool published;
+    bool published = false;
     
     double x,y,theta;
 
@@ -68,7 +68,7 @@ public:
         sleep(1.0);
         ros::Rate rate(20);
         
-        while(!published){
+        while(!published&&ros::ok()){
             
             ros::spinOnce();
             rate.sleep();
