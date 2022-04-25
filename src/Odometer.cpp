@@ -150,7 +150,7 @@ void odometer::publish(void){
     odom.pose.pose.orientation = odom_trans.transform.rotation;
 
     //set the velocity
-    odom.child_frame_id = "base_link";
+    odom.child_frame_id = "robot";
     odom.twist.twist.linear.x = this->vel_x;
     odom.twist.twist.linear.y = this->vel_y;
     odom.twist.twist.linear.z = 0.0;
