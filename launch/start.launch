@@ -1,0 +1,7 @@
+<launch>
+  <!--- Run node_template node -->
+  <node pkg="project1" type="odometer" respawn="false" name="node_template" output="screen">
+    <rosparam file="$(find project1)/parameters/node_loop_rate_params.yaml" command="load" />
+    <rosparam file="$(find project1)/parameters/robot_params.yaml" command="load" />
+  </node>
+</launch>
