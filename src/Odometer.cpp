@@ -31,6 +31,7 @@ void odometer::Prepare(void)
     
     this->integration_method = 0;
 
+
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 }
 
