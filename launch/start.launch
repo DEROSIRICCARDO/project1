@@ -1,7 +1,17 @@
 <launch>
-  <!--- Run node_template node -->
-  <node pkg="project1" type="odometer" respawn="false" name="node_template" output="screen">
-    <rosparam file="$(find project1)/parameters/node_loop_rate_params.yaml" command="load" />
-    <rosparam file="$(find project1)/parameters/robot_params.yaml" command="load" />
-  </node>
+  <!--- Run project1 nodes -->
+  
+  <rosparam file="$(find project1)/parameters/node_loop_rate_params.yaml" command="load" />
+  <rosparam file="$(find project1)/parameters/robot_params.yaml" command="load" />
+
+
+  <node pkg="project1" type="velocity" respawn="false" name="velocity" />
+
+  <node pkg="project1" type="inv_velocity" respawn="false" name="inv_velocity"  />
+  
+  <node pkg="project1" type="odometer" respawn="false" name="odometer"  />
+  
+  <node pkg="project1" type="reset_client" respawn="false" name="reset_client"  />
+  
+
 </launch>
