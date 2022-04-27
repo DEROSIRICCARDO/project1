@@ -14,11 +14,7 @@
   <node pkg="project1" type="reset_client" respawn="false" name="reset_client"  />
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 1 world map " />
-<<<<<<< HEAD
-
-=======
   
->>>>>>> c3aa7e93ee5ad668b87590023acb7f98419c0bd8
   <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 1 map odom " />
 
 </launch>
