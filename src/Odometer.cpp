@@ -31,6 +31,7 @@ void odometer::Prepare(void)
     
     this->integration_method = 0;
 
+
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 }
 
@@ -113,7 +114,7 @@ void odometer::integrate(void){
 
     this->past_time = this->current_time;
 
-    ROS_INFO("supposed pose is [%f,%f,%f], integrated with method %d", (double)this->x, (double)this->y, (double)this->theta, this->integration_method);
+    ROS_INFO("supposed pose is [%f,%f,%f], integrated with %s method", (double)this->x, (double)this->y, (double)this->theta, this->integration_method ? "Runge-Kutta" : "Euler");
 }
 
 void odometer::publish(void){
