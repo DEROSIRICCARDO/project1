@@ -94,7 +94,7 @@ void velocity::compute_velocity(void){
         ticks[i] = this->position_curr[i] - this->position_past[i];
     };
     double wheel_vel[4];
-    double mat[3][4] = {{r/4, r/4, r/4, r/4,},
+    double mat[3][4] = {{r/4, r/4, r/4, r/4},
                      {-r/4, r/4, r/4, -r/4},
                      {-r/4/(l+w), r/4/(l+w), -r/4/(l+w), r/4/(l+w)}};
 
