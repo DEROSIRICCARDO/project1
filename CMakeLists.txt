@@ -56,6 +56,7 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    Wrpm.msg
+   ParamMsg.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -170,6 +171,12 @@ include_directories(
  add_executable(inv_velocity src/inv_velocity.cpp src/inv_velocity_node.cpp)
  add_dependencies(inv_velocity ${catkin_EXPORTED_TARGETS})
  target_link_libraries(inv_velocity ${catkin_LIBRARIES})
+
+ ## calibrator
+ add_executable(calibrator src/calibration.cpp)
+ add_dependencies(calibrator ${catkin_EXPORTED_TARGETS})
+ target_link_libraries(calibrator ${catkin_LIBRARIES})
+
 
  
 
