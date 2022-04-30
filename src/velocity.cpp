@@ -62,6 +62,13 @@ void velocity::RunPeriodically(void)
     // Wait other nodes start
     sleep(1.0);
 
+    // used to initialize ticks
+    ros::spinOnce();
+    for(int i=0; i<4; i++)
+        this->position_past[i] = this->position_curr[i];
+
+    sleep(0.5);
+
     while (ros::ok()){
         
         ros::spinOnce();

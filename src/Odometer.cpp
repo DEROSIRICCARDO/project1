@@ -4,7 +4,7 @@
 void odometer::Prepare(void)
 {
     /* ROS topics */
-    this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &odometer::input_MessageCallback, this);
+    this->input_subscriber = this->Handle.subscribe("/cmd_vel", 10, &odometer::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<nav_msgs::Odometry>("/odom", 1);
     
     /*Ros services*/
@@ -77,6 +77,7 @@ bool odometer::reset_callback(project1::Reset_Odometry::Request&  req, project1:
     ROS_INFO("Request to reset the pose of the odometry to [%f,%f,%f]  - Responding with old pose: [%f,%f,%f]",
         (double)req.x, (double)req.y, (double)req.theta, (double)res.x, (double)res.y, (double)res.theta);
     
+
     return true;
 }
 
