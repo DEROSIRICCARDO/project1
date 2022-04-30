@@ -90,7 +90,6 @@ void odometer::int_method_callback(project1::integration_methodsConfig &config, 
 
 void odometer::integrate(void){
     
-    this-> current_time = ros::Time::now();
     double Ts = (this->current_time - this->past_time).toSec();
     double delta_x, delta_y, delta_theta;
     
