@@ -68,7 +68,7 @@ public:
     
     void main_loop(){
         sleep(1.0);
-        ros::Rate rate(1);
+        ros::Rate rate(2);
         
         ROS_INFO("Node %s running.", ros::this_node::getName().c_str());
         while(!published&&ros::ok()){

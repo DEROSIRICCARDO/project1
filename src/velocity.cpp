@@ -61,7 +61,7 @@ void velocity::Prepare(void)
 
 void velocity::RunPeriodically(void)
 {
-    ROS_INFO("Node %s running.", ros::this_node::getName().c_str());
+    ROS_INFO("Node %s is running.", ros::this_node::getName().c_str());
 
     ros::Rate LoopRate(10);
 
