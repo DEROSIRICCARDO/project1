@@ -101,7 +101,7 @@ void odometer::integrate(void){
             break;
             
         case 1:
-            delta_x = vel_x*Ts*std::cos(theta+omega*Ts/2) - vel_y*Ts*std::sin(theta+omega*Ts/2);
+            delta_x = - vel_x*Ts*std::cos(theta+omega*Ts/2) + vel_y*Ts*std::sin(theta+omega*Ts/2);
             delta_y = vel_y*Ts*std::sin(theta+omega*Ts/2) - vel_y*Ts*std::cos(theta+omega*Ts/2);
             delta_theta = omega * Ts;
             break;
