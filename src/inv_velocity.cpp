@@ -2,7 +2,8 @@
 
 void inv_velocity::Prepare(void)
 {
-    /* Retrieve parameters from ROS parameter server */
+    /* Retrieve parameters from ROS parameter server 
+
     std::string FullParamName;
     std::string PartialName = "omnirobot";
     
@@ -27,12 +28,17 @@ void inv_velocity::Prepare(void)
     if (false == Handle.getParam(FullParamName, N))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
     
-    
+    */
     
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &inv_velocity::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<project1::Wrpm>("/wheels_rpm", 1);
     
+    /* dynamic parameters */
+
+    dynamic_reconfigure::Server<project1::calibrationConfig>::CallbackType f;
+    f = boost::bind(&inv_velocity::robot_params_callback, this, _1, _2);
+    dynServer.setCallback(f);
 
     /* Initialize node state */
     this->vel_x = 0;
@@ -72,6 +78,17 @@ void inv_velocity::input_MessageCallback(const geometry_msgs::TwistStamped::Cons
     inv_velocity::compute_inv_velocity();
     inv_velocity::publish();
 };
+
+void inv_velocity::robot_params_callback(project1::calibrationConfig &config, uint32_t level){
+    ROS_INFO("Reconfigure request: r=%f, l=%f, w=%f, T=%d, N=%d - Level %d",
+             config.r, config.l, config.w, config.T, config.N, level);
+    
+    this->r = config.r;
+    this->l = config.l;
+    this->w = config.w;
+    this->T = config.T;
+    this->N = config.N;
+}
 
 void inv_velocity::compute_inv_velocity(void){
     

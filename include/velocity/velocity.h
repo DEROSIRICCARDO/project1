@@ -5,6 +5,8 @@
 
 #include "sensor_msgs/JointState.h"
 #include "geometry_msgs/TwistStamped.h"
+#include <dynamic_reconfigure/server.h>
+#include <project1/calibrationConfig.h>
 
 
 #define NAME_OF_THIS_NODE "velocity"
@@ -19,8 +21,14 @@ class velocity  //header of the class
     ros::Subscriber input_subscriber;
     ros::Publisher output_publisher;
 
+    /* Dynamic reconfigure server*/
+    dynamic_reconfigure::Server<project1::calibrationConfig> dynServer;
+
     /* ROS topic callbacks */
     void input_MessageCallback(const sensor_msgs::JointState::ConstPtr& wheel_state);
+
+    /* dynamics reconfigure callback*/
+    void robot_params_callback(project1::calibrationConfig &config, uint32_t level);
      
     /*auxiliary functions*/
     void compute_velocity(void);
@@ -34,7 +42,8 @@ class velocity  //header of the class
     
     double position_curr[4], position_past[4];
     double vel[3];
-    double l, w, r, T, N;
+    double l, w, r;
+    int T, N;
     
 
   public:
