@@ -63,7 +63,7 @@ void velocity::RunPeriodically(void)
 {
     ROS_INFO("Node %s running.", ros::this_node::getName().c_str());
 
-    ros::Rate LoopRate(this->LoopRate);
+    ros::Rate LoopRate(10);
 
     // Wait other nodes start
     sleep(1.0);

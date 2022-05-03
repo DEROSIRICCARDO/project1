@@ -37,7 +37,6 @@ class velocity  //header of the class
     
     /* Node state variables */
     
-    double LoopRate;
     ros::Time current_time, past_time;
     
     double position_curr[4], position_past[4];
