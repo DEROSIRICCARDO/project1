@@ -5,7 +5,8 @@
 
 #include "geometry_msgs/TwistStamped.h"
 #include "project1/Wrpm.h"
-
+#include <dynamic_reconfigure/server.h>
+#include <project1/calibrationConfig.h>
 
 #define NAME_OF_THIS_NODE "inv_velocity"
 
@@ -19,8 +20,14 @@ class inv_velocity  //header of the class
     ros::Subscriber input_subscriber;
     ros::Publisher output_publisher;
 
+    /* Dynamic reconfigure server*/
+    dynamic_reconfigure::Server<project1::calibrationConfig> dynServer;
+
     /* ROS topic callbacks */
     void input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel);
+
+    /* dynamics reconfigure callback*/
+    void robot_params_callback(project1::calibrationConfig &config, uint32_t level);
      
     /*auxiliary functions*/
     void compute_inv_velocity(void);
@@ -31,7 +38,8 @@ class inv_velocity  //header of the class
     
     double vel_x, vel_y, omega;
     double ome_fl, ome_fr, ome_rl, ome_rr;
-    double l, w, r, T, N;
+    double l, w, r;
+    int T, N;
     
 
   public:

@@ -2,7 +2,7 @@
 
 void velocity::Prepare(void)
 {
-    /* Retrieve parameters from ROS parameter server */
+    /* Retrieve parameters from ROS parameter server 
     std::string FullParamName;
     std::string PartialName = "omnirobot";
     
@@ -30,11 +30,17 @@ void velocity::Prepare(void)
     if (false == Handle.getParam(FullParamName, N))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
     
-    
+    */
     
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/wheel_states", 1, &velocity::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<geometry_msgs::TwistStamped>("/cmd_vel", 1);
+
+    /* dynamic parameters */
+
+    dynamic_reconfigure::Server<project1::calibrationConfig>::CallbackType f;
+    f = boost::bind(&velocity::robot_params_callback, this, _1, _2);
+    dynServer.setCallback(f);
     
 
     /* Initialize node state */
@@ -57,7 +63,7 @@ void velocity::RunPeriodically(void)
 {
     ROS_INFO("Node %s running.", ros::this_node::getName().c_str());
 
-    ros::Rate LoopRate(this->LoopRate);
+    ros::Rate LoopRate(10);
 
     // Wait other nodes start
     sleep(1.0);
@@ -91,6 +97,17 @@ void velocity::input_MessageCallback(const sensor_msgs::JointState::ConstPtr& wh
         this->position_curr[i] = wheel_state->position[i];
     };
 };
+
+void velocity::robot_params_callback(project1::calibrationConfig &config, uint32_t level){
+    ROS_INFO("Reconfigure request: r=%f, l=%f, w=%f, T=%d, N=%d - Level %d",
+             config.r, config.l, config.w, config.T, config.N, level);
+    
+    this->r = config.r;
+    this->l = config.l;
+    this->w = config.w;
+    this->T = config.T;
+    this->N = config.N;
+}
 
 void velocity::compute_velocity(void){
     
