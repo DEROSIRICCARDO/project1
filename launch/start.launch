@@ -11,7 +11,7 @@
   
   <node pkg="project1" type="odometer" respawn="false" name="odometer"  />
   
-  <node pkg="project1" type="reset_client" respawn="false" name="reset_client"  />
+  <node pkg="project1" type="reset_client" respawn="false" name="reset_client" output = "screen" />
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 1 world map " />
   

@@ -2,43 +2,16 @@
 
 void inv_velocity::Prepare(void)
 {
-    /* Retrieve parameters from ROS parameter server 
-
-    std::string FullParamName;
-    std::string PartialName = "omnirobot";
     
-    
-    FullParamName = PartialName+"/l";
-    if (false == Handle.getParam(FullParamName, l))
-        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-    
-    FullParamName = PartialName+"/w";
-    if (false == Handle.getParam(FullParamName, w))
-        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-    
-    FullParamName = PartialName+"/r";
-    if (false == Handle.getParam(FullParamName, r))
-        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-    
-    FullParamName = PartialName+"/T";
-    if (false == Handle.getParam(FullParamName, T))
-        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-    
-    FullParamName = PartialName+"/N";
-    if (false == Handle.getParam(FullParamName, N))
-        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-    
-    */
     
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &inv_velocity::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<project1::Wrpm>("/wheels_rpm", 1);
-    
-    /* dynamic parameters */
 
     dynamic_reconfigure::Server<project1::calibrationConfig>::CallbackType f;
     f = boost::bind(&inv_velocity::robot_params_callback, this, _1, _2);
     dynServer.setCallback(f);
+    
 
     /* Initialize node state */
     this->vel_x = 0;
@@ -49,6 +22,9 @@ void inv_velocity::Prepare(void)
     this->ome_fr = 0;
     this->ome_rl = 0;
     this->ome_rr = 0;
+
+    this->T = 5;
+
     
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 };
@@ -80,29 +56,33 @@ void inv_velocity::input_MessageCallback(const geometry_msgs::TwistStamped::Cons
 };
 
 void inv_velocity::robot_params_callback(project1::calibrationConfig &config, uint32_t level){
-    ROS_INFO("Reconfigure request: r=%f, l=%f, w=%f, T=%d, N=%d - Level %d",
-             config.r, config.l, config.w, config.T, config.N, level);
+    ROS_INFO("Reconfigure request: r=%f, l=%f, w=%f, N=%f - Level %d",
+             config.r, config.l, config.w,  config.N, level);
     
     this->r = config.r;
     this->l = config.l;
     this->w = config.w;
-    this->T = config.T;
     this->N = config.N;
 }
 
 void inv_velocity::compute_inv_velocity(void){
+    double k = 30 / 3.14; 
     
-    this->ome_fl = T/r * (vel_x - vel_y - omega * (l+w));
-    this->ome_fr = T/r * (vel_x + vel_y + omega * (l+w));
-    this->ome_rl = T/r * (vel_x + vel_y - omega * (l+w));
-    this->ome_rr = T/r * (vel_x - vel_y + omega * (l+w));
+    this->ome_fl = k*T/r * (vel_x - vel_y - omega * (l+w));
+    this->ome_fr = k*T/r * (vel_x + vel_y + omega * (l+w));
+    this->ome_rl = k*T/r * (vel_x + vel_y - omega * (l+w));
+    this->ome_rr = k*T/r * (vel_x - vel_y + omega * (l+w));
 
-    ROS_INFO("supposed velocities of the wheels are [%f,%f,%f,%f]", (double)this->ome_fl, (double)this->ome_fr, (double)this->ome_rl, (double)this->ome_rr);
+
+    ROS_INFO("supposed velocities of the wheels are [%f,%f,%f,%f] rpm", (double)this->ome_fl, (double)this->ome_fr, (double)this->ome_rl, (double)this->ome_rr);
 };
     
     
 void inv_velocity::publish(void){
     project1::Wrpm wheels_rpm;
+
+    wheels_rpm.header.stamp = ros::Time::now();
+    wheels_rpm.header.frame_id = "robot";
      
     wheels_rpm.rpm_fl = this->ome_fl;
     wheels_rpm.rpm_fr = this->ome_fr;

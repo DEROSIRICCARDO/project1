@@ -3,6 +3,25 @@
 
 void odometer::Prepare(void)
 {
+    /* Retrieve parameters from ROS parameter server */
+    std::string FullParamName;
+    std::string PartialName = "omnirobot/initial_pose";
+    
+     FullParamName = PartialName+"/x";
+    if (false == Handle.getParam(FullParamName, x))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+    
+    FullParamName = PartialName+"/y";
+    if (false == Handle.getParam(FullParamName, y))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+    
+    FullParamName = PartialName+"/theta";
+    if (false == Handle.getParam(FullParamName, theta))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+    
+    
+
+
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/cmd_vel", 10, &odometer::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<nav_msgs::Odometry>("/odom", 1);
@@ -21,9 +40,6 @@ void odometer::Prepare(void)
     this->current_time = ros::Time::now();
     this->past_time = ros::Time::now();
     
-    this->x = 0.0;
-    this->y = 0.0;
-    this->theta = 0.0;
     
     this->vel_x = 0.0;
     this->vel_y = 0.0;
@@ -101,8 +117,8 @@ void odometer::integrate(void){
             break;
             
         case 1:
-            delta_x = - vel_x*Ts*std::cos(theta+omega*Ts/2) + vel_y*Ts*std::sin(theta+omega*Ts/2);
-            delta_y = vel_y*Ts*std::sin(theta+omega*Ts/2) - vel_y*Ts*std::cos(theta+omega*Ts/2);
+            delta_x = vel_x*Ts*std::cos(theta+omega*Ts/2) - vel_y*Ts*std::sin(theta+omega*Ts/2);
+            delta_y = vel_x*Ts*std::sin(theta+omega*Ts/2) + vel_y*Ts*std::cos(theta+omega*Ts/2);
             delta_theta = omega * Ts;
             break;
             

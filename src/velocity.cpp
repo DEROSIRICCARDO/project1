@@ -2,7 +2,7 @@
 
 void velocity::Prepare(void)
 {
-    /* Retrieve parameters from ROS parameter server 
+    /* Retrieve parameters from ROS parameter server */
     std::string FullParamName;
     std::string PartialName = "omnirobot";
     
@@ -10,7 +10,7 @@ void velocity::Prepare(void)
     if (false == Handle.getParam(FullParamName, LoopRate))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
     
-    FullParamName = PartialName+"/l";
+    /* FullParamName = PartialName+"/l";
     if (false == Handle.getParam(FullParamName, l))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
     
@@ -46,6 +46,7 @@ void velocity::Prepare(void)
     /* Initialize node state */
     this->current_time = ros::Time::now();
     this->past_time = ros::Time::now();
+    this->T = 5;
     
     for(int i = 0; i<4; i++){
         this->vel[i] = 0;
@@ -63,7 +64,7 @@ void velocity::RunPeriodically(void)
 {
     ROS_INFO("Node %s is running.", ros::this_node::getName().c_str());
 
-    ros::Rate LoopRate(10);
+    ros::Rate LoopRate(this->LoopRate);
 
     // Wait other nodes start
     sleep(1.0);
@@ -99,13 +100,12 @@ void velocity::input_MessageCallback(const sensor_msgs::JointState::ConstPtr& wh
 };
 
 void velocity::robot_params_callback(project1::calibrationConfig &config, uint32_t level){
-    ROS_INFO("Reconfigure request: r=%f, l=%f, w=%f, T=%d, N=%d - Level %d",
-             config.r, config.l, config.w, config.T, config.N, level);
+    ROS_INFO("Reconfigure request: r=%f, l=%f, w=%f,  N=%f - Level %d",
+             config.r, config.l, config.w, config.N, level);
     
     this->r = config.r;
     this->l = config.l;
     this->w = config.w;
-    this->T = config.T;
     this->N = config.N;
 }
 
