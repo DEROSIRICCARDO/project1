@@ -4,3 +4,8 @@
   /omnirobot/r: 0.07          # wheel radius
   /omnirobot/T: 5
   /omnirobot/N: 42
+
+# Robot initial pose
+  /omnirobot/initial_pose/x: 0.0    
+  /omnirobot/initial_pose/y: 0.0    
+  /omnirobot/initial_pose/theta: 0.0    

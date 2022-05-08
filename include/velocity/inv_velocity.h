@@ -39,8 +39,8 @@ class inv_velocity  //header of the class
     double vel_x, vel_y, omega;
     double ome_fl, ome_fr, ome_rl, ome_rr;
     double l, w, r;
-    int T, N;
-    
+    int T;
+    double N;
 
   public:
     void Prepare(void);
