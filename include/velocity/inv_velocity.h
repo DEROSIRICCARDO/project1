@@ -23,7 +23,7 @@ class inv_velocity  //header of the class
     ros::Publisher output_publisher;
 
     /* Dynamic reconfigure server*/
-    dynamic_reconfigure::Server<project1::calibrationConfig> dynServer;
+    /*dynamic_reconfigure::Server<project1::calibrationConfig> dynServer;*/
 
     /* ROS topic callbacks */
     void input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel);
