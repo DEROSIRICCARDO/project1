@@ -1,5 +1,4 @@
 # project1
-First robotics project 2022
 Student ID: 10602888		name: Riccardo		Surname: De Rosi
 Student ID: 10661470		name: Marco		Surname: Corso
 Student ID: 		name: Luca		Surname: Lobriglio
@@ -15,7 +14,10 @@ Rviz contiene il file per aprire il programma rviz con già preimpostati tutti i
 Src contiene tutti i file dei nodi. Il Client serve per resettare la posizione e sincronizzarla con quella della bag. In inv_velocity e velocity vengono descritte la varie funzione del nodo per calcolare la cinematica diretta e inversa. Nell'odometer invece vengono descritte le funzione per calcolare l'odometria.
 Srv contiene il file per il reset (nello specifico descrive la struttura della posizione)
 
-Nell'odometria i parametri di ros che richiamiamo sono i valori della posizione lungo x e lungo y e il valore dell'angolo theta. Nella cinematica richiamiamo solo il valore della frequenza (LoopRate).
+I parametri che abbiamo aggiunto sono il looprate che è la frequenza con la quale si aggiorna il nodo, i 5 valori dati dal problema (l, w, r, T, N) e il valore iniziale della posizione lungo x, y e dell'angolo theta.
 
+La struttura è formata da world map odom robot.
+
+Abbiamo creato 2 tipi di messaggi chiamati ParamMsm e Wrpm. Il primo è usato per la calibrazione ed è un vettore formato dalle tre variabili lw(l+w), r e N. Il secondo è sempre un vettore formato dalla velocità di ogni ruota e viene usato nella cinematica inversa.
 
 Per far partire i nodi basta far partire il file .launch.
