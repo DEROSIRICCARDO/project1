@@ -5,6 +5,7 @@
 
 #include "sensor_msgs/JointState.h"
 #include "geometry_msgs/TwistStamped.h"
+#include "std_msgs/Float64MultiArray.h"
 #include <dynamic_reconfigure/server.h>
 #include <project1/calibrationConfig.h>
 
@@ -20,6 +21,7 @@ class velocity  //header of the class
     /* ROS topics */
     ros::Subscriber input_subscriber;
     ros::Publisher output_publisher;
+    ros::Publisher output_publisher2;
 
     /* Dynamic reconfigure server*/
     dynamic_reconfigure::Server<project1::calibrationConfig> dynServer;
@@ -33,6 +35,7 @@ class velocity  //header of the class
     /*auxiliary functions*/
     void compute_velocity(void);
     void publish(void);
+    void publish_value(void);
     
     
     /* Node state variables */

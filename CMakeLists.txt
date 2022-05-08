@@ -97,9 +97,6 @@ find_package(catkin REQUIRED COMPONENTS
    cfg/integration_methods.cfg
    cfg/calibration.cfg
  )
- generate_dynamic_reconfigure_options(
-   cfg/calibration.cfg
- )
 
 ###################################
 ## catkin specific configuration ##

@@ -35,6 +35,7 @@ void velocity::Prepare(void)
     /* ROS topics */
     this->input_subscriber = this->Handle.subscribe("/wheel_states", 1, &velocity::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<geometry_msgs::TwistStamped>("/cmd_vel", 1);
+    this->output_publisher2 = this->Handle.advertise<std_msgs::Float64MultiArray>("/value", 1);
 
     /* dynamic parameters */
 
@@ -107,6 +108,8 @@ void velocity::robot_params_callback(project1::calibrationConfig &config, uint32
     this->l = config.l;
     this->w = config.w;
     this->N = config.N;
+
+    velocity::publish_value();
 }
 
 void velocity::compute_velocity(void){
@@ -160,3 +163,13 @@ void velocity::publish(){
     output_publisher.publish(cmd_vel);
 };
     
+void velocity::publish_value(){
+
+    std_msgs::Float64MultiArray value;
+    value.data[0] = this->r;
+    value.data[1] = this->l;
+    value.data[2] = this->w;
+    value.data[3] = this->N;
+    
+    output_publisher2.publish(value);
+};

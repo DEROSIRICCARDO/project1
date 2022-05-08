@@ -5,6 +5,7 @@
 
 #include "geometry_msgs/TwistStamped.h"
 #include "project1/Wrpm.h"
+#include "std_msgs/Float64MultiArray.h"
 #include <dynamic_reconfigure/server.h>
 #include <project1/calibrationConfig.h>
 
@@ -17,6 +18,7 @@ class inv_velocity  //header of the class
     ros::NodeHandle Handle;
 
     /* ROS topics */
+    ros::Subscriber input_subscriber2;
     ros::Subscriber input_subscriber;
     ros::Publisher output_publisher;
 
@@ -25,9 +27,10 @@ class inv_velocity  //header of the class
 
     /* ROS topic callbacks */
     void input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel);
+    void input_ValueParameter(const std_msgs::Float64MultiArray::ConstPtr& value);
 
     /* dynamics reconfigure callback*/
-    void robot_params_callback(project1::calibrationConfig &config, uint32_t level);
+    /*void robot_params_callback(project1::calibrationConfig &config, uint32_t level);*/
      
     /*auxiliary functions*/
     void compute_inv_velocity(void);

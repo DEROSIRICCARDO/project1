@@ -5,12 +5,13 @@ void inv_velocity::Prepare(void)
     
     
     /* ROS topics */
+    this->input_subscriber2 = this->Handle.subscribe("/value", 1, &inv_velocity::input_ValueParameter, this);
     this->input_subscriber = this->Handle.subscribe("/cmd_vel", 1, &inv_velocity::input_MessageCallback, this);
     this->output_publisher = this->Handle.advertise<project1::Wrpm>("/wheels_rpm", 1);
 
-    dynamic_reconfigure::Server<project1::calibrationConfig>::CallbackType f;
+    /*dynamic_reconfigure::Server<project1::calibrationConfig>::CallbackType f;
     f = boost::bind(&inv_velocity::robot_params_callback, this, _1, _2);
-    dynServer.setCallback(f);
+    dynServer.setCallback(f);*/
     
 
     /* Initialize node state */
@@ -44,6 +45,16 @@ void inv_velocity::Shutdown(void)
     ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
 };
 
+void inv_velocity::input_ValueParameter(const std_msgs::Float64MultiArray::ConstPtr& value)
+{
+    /* Read message and store information */
+    this->r = value->data[0];
+    this->l = value->data[1];
+    this->w = value->data[2];
+    this->N = value->data[3];
+
+};
+
 void inv_velocity::input_MessageCallback(const geometry_msgs::TwistStamped::ConstPtr& cmd_vel)
 {
     /* Read message and store information */
@@ -55,7 +66,8 @@ void inv_velocity::input_MessageCallback(const geometry_msgs::TwistStamped::Cons
     inv_velocity::publish();
 };
 
-void inv_velocity::robot_params_callback(project1::calibrationConfig &config, uint32_t level){
+
+/*void inv_velocity::robot_params_callback(project1::calibrationConfig &config, uint32_t level){
     ROS_INFO("Reconfigure request: r=%f, l=%f, w=%f, N=%f - Level %d",
              config.r, config.l, config.w,  config.N, level);
     
@@ -63,7 +75,7 @@ void inv_velocity::robot_params_callback(project1::calibrationConfig &config, ui
     this->l = config.l;
     this->w = config.w;
     this->N = config.N;
-}
+}*/
 
 void inv_velocity::compute_inv_velocity(void){
     double k = 30 / 3.14; 
