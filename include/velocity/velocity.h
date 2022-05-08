@@ -46,6 +46,8 @@ class velocity  //header of the class
     double l, w, r;
     int T; 
     double N;
+
+    double velocity_curr[4];
     
 
   public:
